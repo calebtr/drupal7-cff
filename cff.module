@@ -1,0 +1,50 @@
+<?php
+/**
+ * @file
+ * Implements hooks for a 'Browser and OS' field formatter to be used with the Browscap module.
+ */
+
+/**
+ *  Implements hook_field_formatter_info().
+ */
+function cff_field_formatter_info() {
+  if (function_exists('browscap_get_browser')) {
+    return array(
+      'browser_and_os' => array(
+        'label' => t('Browser and OS'),
+        'field types' => array('text', 'text_long', 'text_with_summary'),
+      ),
+    );
+  }
+}
+
+
+/**
+ * Implements hook_field_formatter_view(). 
+ */
+function cff_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  if ($display['type'] == 'browser_and_os') {
+    $element = array();
+    foreach ($items as $delta => $item) {
+      $browser = $item['safe_value'];
+      if (function_exists('browscap_get_browser')) {
+        $data = browscap_get_browser($browser);
+        if ($data['browser'] == 'Default browser' || $data['platform'] == 'unknown') {
+          $element[] = array('#markup' => $browser);
+        }
+        else {
+          $options = array('attributes' => array('onclick' => "alert('" . $browser  . "'); return false;"),
+                           'html' => TRUE);
+          $link = l($data['browser'] . ' on ' . $data['platform'], '#', $options);
+          $element[] = array('#markup' => $link);
+        }
+      }
+      else {
+        $element[] = array('#markup' => $browser);
+      }
+    }
+    return $element;
+  }
+}
+
+

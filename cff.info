@@ -1,0 +1,4 @@
+name = Custom field formatters
+description = A collection of field formmaters to be used again. 'Browser and OS' - uses Browscap module to format a useragent string.
+core = 7.x
+
